@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ListaDinamicaHeroes</string>
+    <string name="spFirstTime">spFirstTime</string>
+    <string name="dialog_register">Login</string>
+    <string name="confirm_dialog">Entrar</string>
+    <string name="spUserName">spUserName</string>
+    <string name="userDefault">Anonimo</string>
+    <string name="dialog_password">Contraseña</string>
+    <string name="home_title">Puesto</string>
+    <string name="add_unity">Unidad</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
