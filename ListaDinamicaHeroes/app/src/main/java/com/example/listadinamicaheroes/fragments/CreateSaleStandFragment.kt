@@ -43,20 +43,20 @@ class CreateSaleStandFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mBinding.button2.setOnClickListener{saveUser()}
+        mBinding.button2.setOnClickListener{saveUser(view)}
     }
 
-    private fun saveUser() {
+    private fun saveUser(view: View) {
         var saleStand = SaleStand(mBinding.eText3.text.toString(),mBinding.eText4.text.toString(),mBinding.eText2.text.toString(),mBinding.eText1.text.toString(),mBinding.eText.text.toString())
 
         myRef.child(mBinding.eText.text.toString()).setValue(saleStand)
 
+        Toast.makeText(view.context, "Puesto de venta creado exitosamente", Toast.LENGTH_SHORT).show()
 
         val mIntent = Intent(Intent.ACTION_SEND)
 
         mIntent.data = Uri.parse("mailto:")
         mIntent.type = "text/plain"
-
 
         mIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(mBinding.eText4.text.toString().trim()))
         mIntent.putExtra(Intent.EXTRA_SUBJECT, "Nuevo usuario creado")
@@ -66,9 +66,8 @@ class CreateSaleStandFragment : Fragment() {
             startActivity(Intent.createChooser(mIntent, "Elegir correo"))
 
         }catch (e:Exception) {
-            Log.d("Fallo al enviar el corre", e.message.toString())
+            Log.d("Fallo al enviar el correo", e.message.toString())
         }
-
 
         mBinding.eText.text.clear()
         mBinding.eText1.text.clear()

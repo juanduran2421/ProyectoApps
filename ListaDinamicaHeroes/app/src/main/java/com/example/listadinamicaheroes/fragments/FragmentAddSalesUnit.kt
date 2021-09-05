@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.example.listadinamicaheroes.R
 import com.example.listadinamicaheroes.data.SaleStand
 import com.example.listadinamicaheroes.databinding.AddSalesUnitBinding
@@ -30,11 +31,13 @@ class FragmentAddSalesUnit : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mBinding.button.setOnClickListener{saveUnit()}
+        mBinding.button.setOnClickListener{saveUnit(view)}
     }
 
-    private fun saveUnit() {
+    private fun saveUnit(view: View) {
         myRef.push().setValue(mBinding.etUnit.text.toString())
+
+        Toast.makeText(view.context, "Unidad añadida exitosamente", Toast.LENGTH_SHORT).show()
 
         mBinding.etUnit.text.clear()
     }

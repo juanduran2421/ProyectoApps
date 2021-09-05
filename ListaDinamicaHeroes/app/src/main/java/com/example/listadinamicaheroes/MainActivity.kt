@@ -27,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityMainBinding
     private lateinit var fragmentManager: FragmentManager;
     private lateinit var activeFragment: Fragment
+    private lateinit var snapshotDataBase: DataSnapshot
+
     val database = Firebase.database
     val myRef = database.getReference("Sale")
 
@@ -36,7 +38,16 @@ class MainActivity : AppCompatActivity() {
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        var correctPassword = "password"
+        myRef.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshotDataBase = snapshot
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+
+        var correctPassword = ""
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_register, null)
 
@@ -50,22 +61,22 @@ class MainActivity : AppCompatActivity() {
         positiveButton.setOnClickListener {
             val userName = dialogView.findViewById<EditText>(R.id.etUserName).text.toString()
             val password = dialogView.findViewById<EditText>(R.id.etPassword).text.toString()
-            val rol = dialogView.findViewById<EditText>(R.id.etRol).text.toString()
 
-            myRef.addValueEventListener(object: ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val value = snapshot.child(userName)
+            while (!snapshotDataBase.exists()) {
+                Toast.makeText(
+                        this,
+                        "Esperando a la base de datos",
+                        Toast.LENGTH_SHORT
+                ).show()
+            }
 
-                    if (value.getValue<SaleStand>()!= null) {
-                        correctPassword = value.getValue<SaleStand>()?.password.toString()
+            val value = snapshotDataBase.child(userName)
 
-                        removeAlertDialog(alertDialog, correctPassword, password)
-                    }
-                }
+            if (value.getValue<SaleStand>()!= null) {
+                correctPassword = value.getValue<SaleStand>()?.password.toString()
 
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
+                removeAlertDialog(alertDialog, correctPassword, password)
+            }
         };
 
         setUpBottonNav()
