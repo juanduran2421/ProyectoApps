@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.listadinamicaheroes.data.SaleStand
 import com.example.listadinamicaheroes.databinding.ActivityMainBinding
 import com.example.listadinamicaheroes.fragments.CreateSaleStandFragment
+import com.example.listadinamicaheroes.fragments.CustomSaleStand
 import com.example.listadinamicaheroes.fragments.FragmentAddSalesUnit
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.DataSnapshot
@@ -109,6 +110,7 @@ class MainActivity : AppCompatActivity() {
 
         val addFragment = FragmentAddSalesUnit()
         val createSaleStandFragment = CreateSaleStandFragment()
+        var customSaleStand = CustomSaleStand()
 
         activeFragment = createSaleStandFragment
 
@@ -120,6 +122,11 @@ class MainActivity : AppCompatActivity() {
         fragmentManager.beginTransaction()
             .add(R.id.fragmentContainer, addFragment)
             .hide(addFragment)
+            .commit()
+
+        fragmentManager.beginTransaction()
+            .add(R.id.fragmentContainer, customSaleStand)
+            .hide(customSaleStand)
             .commit()
 
         viewBinding.bottomNav.setOnNavigationItemSelectedListener {
@@ -139,6 +146,15 @@ class MainActivity : AppCompatActivity() {
                         .show(addFragment)
                         .commit()
                     activeFragment = addFragment
+                    true
+                }
+
+                R.id.item_custom -> {
+                    fragmentManager.beginTransaction()
+                        .hide(activeFragment)
+                        .show(customSaleStand)
+                        .commit()
+                    activeFragment = customSaleStand
                     true
                 }
 
