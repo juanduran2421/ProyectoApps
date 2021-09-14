@@ -5,41 +5,82 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.Toast
 import com.example.listadinamicaheroes.R
-import com.example.listadinamicaheroes.databinding.FragmentCustomSaleStandBinding
+import com.example.listadinamicaheroes.data.Product
+import com.example.listadinamicaheroes.data.SaleStand
+import com.example.listadinamicaheroes.databinding.FragmentUpdateSaleProductBinding
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
-class CustomSaleStand : Fragment() {
+class UpdateSaleProduct : Fragment() {
 
     private val RC_GALLERY = 7
-    private val PATH_IMAGENES = "Imagenes"
+    private val PATH_IMAGENES = "Product"
 
-    private lateinit var mBinding: FragmentCustomSaleStandBinding
+    private lateinit var mBinding: FragmentUpdateSaleProductBinding
     private var mImageSelecionadaUri: Uri?=null
     private lateinit var mStorageReference: StorageReference
 
+    val database = Firebase.database
+    val myRef = database.getReference("Unit")
+    val myRefProduct = database.getReference("Product")
+    var units: MutableList<String> = mutableListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        mBinding = FragmentCustomSaleStandBinding.inflate(inflater, container, false)
+
+        mBinding = FragmentUpdateSaleProductBinding.inflate(inflater, container, false)
+
+
         return mBinding.root
+    }
+
+    fun selectItems (view: View) {
+        var spinnermiles =  mBinding.spinner;
+        var adapter = ArrayAdapter(view.context ,android.R.layout.simple_spinner_item, units);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnermiles.setAdapter(adapter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        myRef.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var index = 0
+                for (rest:DataSnapshot in snapshot.children) {
+                    var value =  rest.getValue().toString()
+                    units.add(index, value)
+
+                    index = index +1
+                }
+
+                selectItems(view)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
 
         mBinding.btnPublicar.setOnClickListener{publicarImagen()}
         mBinding.btnSeleccionar.setOnClickListener{abrirGaleria()}
@@ -59,16 +100,17 @@ class CustomSaleStand : Fragment() {
             if (requestCode == RC_GALLERY) {
                 mImageSelecionadaUri = data?.data
                 mBinding.ivPhoto.setImageURI(mImageSelecionadaUri)
-                mBinding.tilTitle.visibility = View.VISIBLE
-                mBinding.tvPasoAdd.text = "Pon titulo a la imagen"
             }
         }
     }
 
     private fun publicarImagen() {
         mBinding.progressBar.visibility = View.VISIBLE
-        val storageReference = mStorageReference.child(PATH_IMAGENES).child(mBinding.tietTitle.text.toString())
-        if (mImageSelecionadaUri != null) {
+        val storageReference = mStorageReference.child(PATH_IMAGENES).child(mBinding.etName.text.toString())
+        if (mImageSelecionadaUri != null && mBinding.etName.text.toString() != "" && mBinding.etName2.text.toString() != "" && mBinding.spinner.selectedItem.toString() != "") {
+            var product = Product(mBinding.etName.text.toString(),mBinding.etName2.text.toString().toInt(), mBinding.spinner.selectedItem.toString())
+            myRefProduct.child(mBinding.etName.text.toString()).setValue(product)
+
             storageReference.putFile(mImageSelecionadaUri!!)
                 .addOnProgressListener {
                     val progress = (100 * it.bytesTransferred / it.totalByteCount).toDouble()
@@ -80,10 +122,16 @@ class CustomSaleStand : Fragment() {
                 }
                 .addOnSuccessListener {
                     Snackbar.make(mBinding.root, "Se subio la imagen", Snackbar.LENGTH_SHORT).show()
+                    mBinding.etName.text.clear()
+                    mBinding.etName2.text.clear()
                 }
                 .addOnFailureListener {
                     Snackbar.make(mBinding.root, "Debes intentar más tarde", Snackbar.LENGTH_SHORT).show()
                 }
+        } else {
+            Snackbar.make(mBinding.root, "Faltan campos por llenar", Snackbar.LENGTH_SHORT).show()
         }
     }
 }
+
+
