@@ -6,4 +6,4 @@ import com.google.firebase.database.IgnoreExtraProperties
 data class Admin (
                       var password:String?=null,
                       var username:String?=null
-                      )
+                  )

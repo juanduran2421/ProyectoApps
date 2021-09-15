@@ -2,6 +2,7 @@ package com.example.listadinamicaheroes
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadinamicaheroes.data.Admin
+import com.example.listadinamicaheroes.data.Product
 import com.example.listadinamicaheroes.data.SaleStand
 import com.example.listadinamicaheroes.databinding.ActivityMainBinding
 import com.example.listadinamicaheroes.fragments.CreateSaleStandFragment
@@ -36,6 +38,9 @@ class MainActivity : AppCompatActivity() {
     val database = Firebase.database
     val myRef = database.getReference("Sale")
     val myRefAdmin = database.getReference("Admin")
+    val addFragment = FragmentAddSalesUnit()
+    val createSaleStandFragment = CreateSaleStandFragment()
+    val customSaleProduct = UpdateSaleProduct()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +52,6 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshotDataBase = snapshot
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
         })
@@ -56,13 +60,11 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshotDataBaseAdmin = snapshot
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
         })
 
         var correctPassword = ""
-
         val dialogView = layoutInflater.inflate(R.layout.dialog_register, null)
 
         var alertDialog = MaterialAlertDialogBuilder(this)
@@ -70,6 +72,8 @@ class MainActivity : AppCompatActivity() {
             .setCancelable(false)
             .setPositiveButton("Entrar", null)
             .show();
+
+        setUpBottonNav()
 
         var positiveButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         positiveButton.setOnClickListener {
@@ -93,49 +97,31 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
 
-
             if (role == "Administrador") {
                 val value = snapshotDataBaseAdmin.child(userName)
 
                 if (value.getValue<Admin>() != null) {
                     correctPassword = value.getValue<Admin>()?.password.toString()
 
-                    val addFragment = FragmentAddSalesUnit()
-                    val createSaleStandFragment = CreateSaleStandFragment()
-                    fragmentManager.beginTransaction()
-                        .remove(addFragment)
-                        .commit()
-
-                    fragmentManager.beginTransaction()
-                        .remove(createSaleStandFragment)
-                        .commit()
-
-                    removeAlertDialog(alertDialog, correctPassword, password)
+                    removeAlertDialog(alertDialog, correctPassword, password, role)
                 }
             } else {
                 val value = snapshotDataBase.child(userName)
 
-
-                val customSaleProduct = UpdateSaleProduct()
-                fragmentManager.beginTransaction()
-                    .remove(customSaleProduct)
-                    .commit()
-
                 if (value.getValue<SaleStand>() != null) {
                     correctPassword = value.getValue<SaleStand>()?.password.toString()
 
-                    removeAlertDialog(alertDialog, correctPassword, password)
+                    removeAlertDialog(alertDialog, correctPassword, password, role)
                 }
             }
         };
-
-        setUpBottonNav()
     }
 
     private fun removeAlertDialog(
         alertDialog: AlertDialog,
         correctPassword: String,
-        password: String
+        password: String,
+        role: String
     ) {
         if (correctPassword == password) {
             Toast.makeText(
@@ -144,8 +130,26 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
 
-            alertDialog.dismiss()
+            if (role == "Administrador") {
+                Log.d("entre", "entre aca")
+                activeFragment = customSaleProduct
 
+                viewBinding.bottomNav.menu.findItem(R.id.item_add).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_add).isCheckable = false
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_home).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_home).isCheckable = false
+
+            } else {
+                Log.d("entre2", "entre aca2")
+
+                activeFragment = createSaleStandFragment
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom).isCheckable = false
+            }
+
+            alertDialog.dismiss()
             fragmentManager.beginTransaction()
                 .show(activeFragment)
                 .commit()
@@ -160,10 +164,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpBottonNav() {
         fragmentManager = supportFragmentManager
-
-        val addFragment = FragmentAddSalesUnit()
-        val createSaleStandFragment = CreateSaleStandFragment()
-        val customSaleProduct = UpdateSaleProduct()
+        fragmentManager.beginTransaction()
+            .add(R.id.fragmentContainer, customSaleProduct)
+            .hide(customSaleProduct)
+            .commit()
 
         activeFragment = createSaleStandFragment
 
@@ -175,11 +179,6 @@ class MainActivity : AppCompatActivity() {
         fragmentManager.beginTransaction()
             .add(R.id.fragmentContainer, addFragment)
             .hide(addFragment)
-            .commit()
-
-        fragmentManager.beginTransaction()
-            .add(R.id.fragmentContainer, customSaleProduct)
-            .hide(customSaleProduct)
             .commit()
 
         viewBinding.bottomNav.setOnNavigationItemSelectedListener {
