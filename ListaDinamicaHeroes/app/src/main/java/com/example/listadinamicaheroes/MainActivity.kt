@@ -1,8 +1,9 @@
 package com.example.listadinamicaheroes
 
+import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
@@ -12,12 +13,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadinamicaheroes.data.Admin
-import com.example.listadinamicaheroes.data.Product
 import com.example.listadinamicaheroes.data.SaleStand
 import com.example.listadinamicaheroes.databinding.ActivityMainBinding
 import com.example.listadinamicaheroes.fragments.CreateSaleStandFragment
-import com.example.listadinamicaheroes.fragments.UpdateSaleProduct
 import com.example.listadinamicaheroes.fragments.FragmentAddSalesUnit
+import com.example.listadinamicaheroes.fragments.UpdateSaleProduct
+import com.example.listadinamicaheroes.fragments.UpdateSaleStand
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -25,6 +26,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     val addFragment = FragmentAddSalesUnit()
     val createSaleStandFragment = CreateSaleStandFragment()
     val customSaleProduct = UpdateSaleProduct()
+    val customSaleStand = UpdateSaleStand()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                 if (value.getValue<Admin>() != null) {
                     correctPassword = value.getValue<Admin>()?.password.toString()
 
-                    removeAlertDialog(alertDialog, correctPassword, password, role)
+                    removeAlertDialog(alertDialog, correctPassword, password, role, userName)
                 }
             } else {
                 val value = snapshotDataBase.child(userName)
@@ -111,7 +114,7 @@ class MainActivity : AppCompatActivity() {
                 if (value.getValue<SaleStand>() != null) {
                     correctPassword = value.getValue<SaleStand>()?.password.toString()
 
-                    removeAlertDialog(alertDialog, correctPassword, password, role)
+                    removeAlertDialog(alertDialog, correctPassword, password, role, userName)
                 }
             }
         };
@@ -121,7 +124,8 @@ class MainActivity : AppCompatActivity() {
         alertDialog: AlertDialog,
         correctPassword: String,
         password: String,
-        role: String
+        role: String,
+        username: String
     ) {
         if (correctPassword == password) {
             Toast.makeText(
@@ -131,22 +135,32 @@ class MainActivity : AppCompatActivity() {
             ).show()
 
             if (role == "Administrador") {
-                Log.d("entre", "entre aca")
                 activeFragment = customSaleProduct
 
+
+                val bundle = Bundle();
+                bundle.putString("username", username);
+
+                customSaleStand.arguments = bundle
+
                 viewBinding.bottomNav.menu.findItem(R.id.item_add).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_add).isVisible = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_add).isCheckable = false
 
                 viewBinding.bottomNav.menu.findItem(R.id.item_home).isEnabled = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_home).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_home).isVisible = false
 
             } else {
-                Log.d("entre2", "entre aca2")
-
                 activeFragment = createSaleStandFragment
 
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom).isEnabled = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom).isVisible = false
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isVisible = false
             }
 
             alertDialog.dismiss()
@@ -164,12 +178,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpBottonNav() {
         fragmentManager = supportFragmentManager
+        activeFragment = createSaleStandFragment
+
         fragmentManager.beginTransaction()
             .add(R.id.fragmentContainer, customSaleProduct)
             .hide(customSaleProduct)
             .commit()
 
-        activeFragment = createSaleStandFragment
+        fragmentManager.beginTransaction()
+                .add(R.id.fragmentContainer, customSaleStand)
+                .hide(customSaleStand)
+                .commit()
 
         fragmentManager.beginTransaction()
             .add(R.id.fragmentContainer, createSaleStandFragment)
@@ -207,6 +226,16 @@ class MainActivity : AppCompatActivity() {
                         .show(customSaleProduct)
                         .commit()
                     activeFragment = customSaleProduct
+                    true
+                }
+
+                R.id.item_custom_sale_stand -> {
+                    fragmentManager.beginTransaction()
+                            .hide(activeFragment)
+                            .show(customSaleStand)
+                            .commit()
+
+                    activeFragment = customSaleStand
                     true
                 }
 

@@ -4,43 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.UpdateSaleProduct"
+    tools:context=".fragments.UpdateSaleStand"
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="-28dp">
 
-    <TextView
-        android:id="@+id/tvCustomSaleStand3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:text="Unidad de venta"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCustomSaleStand2"
-        app:layout_constraintVertical_bias="0.069" />
-
-    <EditText
-        android:id="@+id/etName2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="36dp"
-        android:hint="Precio"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.425"
-        app:layout_constraintStart_toEndOf="@+id/tvCustomSaleStand2"
-        app:layout_constraintTop_toBottomOf="@+id/etName" />
-
-    <TextView
-        android:id="@+id/tvCustomSaleStand2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="44dp"
-        android:text="Precio (Pesos)"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCustomSaleStand" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -56,27 +23,83 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="36dp"
+        android:hint="Nombre"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.299"
+        app:layout_constraintStart_toEndOf="@+id/tvCustomSaleStand"
+        app:layout_constraintTop_toBottomOf="@+id/ivPhoto" />
+
+    <ImageButton
+        android:id="@+id/btnSeleccionar2"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="20dp"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_image_search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPasoAdd2" />
+
+    <ImageView
+        android:id="@+id/ivPhoto2"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="H, 4:3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPasoAdd2" />
+
+    <EditText
+        android:id="@+id/etName2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="36dp"
+        android:hint="Nombre"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.315"
+        app:layout_constraintStart_toEndOf="@+id/tvCustomSaleStand2"
+        app:layout_constraintTop_toBottomOf="@+id/etName" />
+
+    <TextView
+        android:id="@+id/tvPasoAdd2"
+        android:layout_width="0dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="328dp"
+        android:text="Busca una imagen del trabajador"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnPublicar" />
+
     <TextView
         android:id="@+id/tvCustomSaleStand"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
-        android:layout_marginTop="84dp"
-        android:text="Nombre del producto"
+        android:layout_marginTop="28dp"
+        android:text="Nombre del puesto"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivPhoto" />
 
-    <EditText
-        android:id="@+id/etName"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/tvCustomSaleStand2"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="36dp"
-        android:hint="Nombre"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.292"
-        app:layout_constraintStart_toEndOf="@+id/tvCustomSaleStand"
-        app:layout_constraintTop_toBottomOf="@+id/ivPhoto" />
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="52dp"
+        android:text="Nombre trabajador"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCustomSaleStand" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnPublicar"
@@ -93,7 +116,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
-        android:text="Busca una imagen del producto"
+        android:text="Busca una imagen del terreno"
         app:layout_constraintBottom_toBottomOf="@id/btnPublicar"
         app:layout_constraintEnd_toStartOf="@id/btnPublicar"
         app:layout_constraintHorizontal_bias="0.0"
@@ -124,18 +147,4 @@
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPasoAdd" />
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:drawSelectorOnTop="true"
-        android:entries="@array/spinnerUnits"
-        android:spinnerMode="dropdown"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.707"
-        app:layout_constraintStart_toEndOf="@+id/tvCustomSaleStand3"
-        app:layout_constraintTop_toBottomOf="@+id/etName2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.example.listadinamicaheroes.fragments
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -84,6 +85,16 @@ class UpdateSaleProduct : Fragment() {
 
         mBinding.btnPublicar.setOnClickListener{publicarImagen()}
         mBinding.btnSeleccionar.setOnClickListener{abrirGaleria()}
+
+        val imageUri = Uri.parse(
+            ContentResolver.SCHEME_ANDROID_RESOURCE.toString() +
+                    "://" + requireContext().resources.getResourcePackageName(R.mipmap.food)
+                    + '/' + requireContext().resources.getResourceTypeName(R.mipmap.food)
+                    + '/' + requireContext().resources.getResourceEntryName(R.mipmap.food)
+        )
+
+        mBinding.ivPhoto.setImageURI(imageUri)
+        mImageSelecionadaUri = imageUri
 
         mStorageReference = FirebaseStorage.getInstance().reference
     }
