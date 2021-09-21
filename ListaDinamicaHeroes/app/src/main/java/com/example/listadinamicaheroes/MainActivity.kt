@@ -100,19 +100,19 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
 
-            if (role == "Administrador") {
-                val value = snapshotDataBaseAdmin.child(userName)
-
-                if (value.getValue<Admin>() != null) {
-                    correctPassword = value.getValue<Admin>()?.password.toString()
-
-                    removeAlertDialog(alertDialog, correctPassword, password, role, userName)
-                }
-            } else {
+            if (role == "Vendedor") {
                 val value = snapshotDataBase.child(userName)
 
                 if (value.getValue<SaleStand>() != null) {
                     correctPassword = value.getValue<SaleStand>()?.password.toString()
+
+                    removeAlertDialog(alertDialog, correctPassword, password, role, userName)
+                }
+            } else {
+                val value = snapshotDataBaseAdmin.child(userName)
+
+                if (value.getValue<Admin>() != null) {
+                    correctPassword = value.getValue<Admin>()?.password.toString()
 
                     removeAlertDialog(alertDialog, correctPassword, password, role, userName)
                 }
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
 
-            if (role == "Administrador") {
+            if (role == "Vendedor") {
                 activeFragment = customSaleProduct
 
 
