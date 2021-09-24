@@ -3,6 +3,13 @@
     <string-array name="spinnerItems">
         <item>Administrador</item>
         <item>Vendedor</item>
-        <item>Comprador</item>
+    </string-array>
+    <string-array name="spinnerUnits">
+        <item>Libra</item>
+        <item>Unidad</item>
+        <item>Pedazo</item>
+        <item>Atao</item>
+        <item>Panel Completo</item>
+        <item>Medio Panel</item>
     </string-array>
 </resources>

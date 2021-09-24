@@ -14,4 +14,16 @@
         android:title="@string/add_unity"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/item_custom"
+        android:icon="@drawable/ic_add"
+        android:title="Customizar Producto"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/item_custom_sale_stand"
+        android:icon="@drawable/ic_add"
+        android:title="Customizar Puesto de Venta"
+        app:showAsAction="never"/>
+
 </menu>
