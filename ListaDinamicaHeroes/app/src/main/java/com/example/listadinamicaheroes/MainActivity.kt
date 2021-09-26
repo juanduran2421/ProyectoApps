@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadinamicaheroes.data.Admin
+import com.example.listadinamicaheroes.data.ExcelData
+import com.example.listadinamicaheroes.data.GestorExcel
 import com.example.listadinamicaheroes.data.SaleStand
 import com.example.listadinamicaheroes.databinding.ActivityMainBinding
 import com.example.listadinamicaheroes.fragments.CreateSaleStandFragment
@@ -26,6 +28,9 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import org.apache.poi.hssf.usermodel.HSSFCellStyle
+import org.apache.poi.hssf.util.HSSFColor
+import org.apache.poi.ss.usermodel.CellStyle
 
 
 class MainActivity : AppCompatActivity() {
@@ -37,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var snapshotDataBase: DataSnapshot
     private lateinit var snapshotDataBaseAdmin: DataSnapshot
 
+    private var excelGestor = GestorExcel()
     val database = Firebase.database
     val myRef = database.getReference("Sale")
     val myRefAdmin = database.getReference("Admin")
@@ -134,9 +140,10 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
 
+            crearExcel()
+
             if (role == "Vendedor") {
                 activeFragment = customSaleProduct
-
 
                 val bundle = Bundle();
                 bundle.putString("username", username);
@@ -243,5 +250,31 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    private fun crearExcel(){
+
+        excelGestor.crearLibro();
+        excelGestor.crearHoja("Hoja1")
+        excelGestor.crearCellSytle(HSSFColor.BLACK.index, HSSFColor.GREEN.index, HSSFCellStyle.SOLID_FOREGROUND, CellStyle.ALIGN_CENTER)
+
+        var numeroFila = 0
+        excelGestor.crearFila(numeroFila)
+        numeroFila++
+
+        excelGestor.createCelda("Campo 1",0)
+        excelGestor.createCelda("Ccampo 2",1)
+
+        excelGestor.crearCellSytle(HSSFColor.BLACK.index, HSSFColor.WHITE.index, HSSFCellStyle.SOLID_FOREGROUND, CellStyle.ALIGN_CENTER)
+
+        for(num in 1..5) {
+            val dato = ExcelData("valor c"+num,num+0.5)
+            excelGestor.crearFila(numeroFila)
+            numeroFila++
+            excelGestor.createCelda(dato.campo1,0)
+            excelGestor.createCelda(dato.campo2,1)
+        }
+
+        excelGestor.guardarLibro("excelCreado3.xls",this)
     }
 }
