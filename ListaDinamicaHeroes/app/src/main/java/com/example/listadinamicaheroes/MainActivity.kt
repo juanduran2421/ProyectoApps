@@ -17,10 +17,7 @@ import com.example.listadinamicaheroes.data.ExcelData
 import com.example.listadinamicaheroes.data.GestorExcel
 import com.example.listadinamicaheroes.data.SaleStand
 import com.example.listadinamicaheroes.databinding.ActivityMainBinding
-import com.example.listadinamicaheroes.fragments.CreateSaleStandFragment
-import com.example.listadinamicaheroes.fragments.FragmentAddSalesUnit
-import com.example.listadinamicaheroes.fragments.UpdateSaleProduct
-import com.example.listadinamicaheroes.fragments.UpdateSaleStand
+import com.example.listadinamicaheroes.fragments.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -42,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var snapshotDataBase: DataSnapshot
     private lateinit var snapshotDataBaseAdmin: DataSnapshot
 
-    private var excelGestor = GestorExcel()
     val database = Firebase.database
     val myRef = database.getReference("Sale")
     val myRefAdmin = database.getReference("Admin")
@@ -50,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     val createSaleStandFragment = CreateSaleStandFragment()
     val customSaleProduct = UpdateSaleProduct()
     val customSaleStand = UpdateSaleStand()
+    val generateOrder = Order()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,8 +137,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
 
-            crearExcel()
-
             if (role == "Vendedor") {
                 activeFragment = customSaleProduct
 
@@ -149,6 +144,7 @@ class MainActivity : AppCompatActivity() {
                 bundle.putString("username", username);
 
                 customSaleStand.arguments = bundle
+                generateOrder.arguments = bundle
 
                 viewBinding.bottomNav.menu.findItem(R.id.item_add).isEnabled = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_add).isVisible = false
@@ -168,6 +164,10 @@ class MainActivity : AppCompatActivity() {
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isEnabled = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isCheckable = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isVisible = false
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isVisible = false
             }
 
             alertDialog.dismiss()
@@ -205,6 +205,11 @@ class MainActivity : AppCompatActivity() {
         fragmentManager.beginTransaction()
             .add(R.id.fragmentContainer, addFragment)
             .hide(addFragment)
+            .commit()
+
+        fragmentManager.beginTransaction()
+            .add(R.id.fragmentContainer, generateOrder)
+            .hide(generateOrder)
             .commit()
 
         viewBinding.bottomNav.setOnNavigationItemSelectedListener {
@@ -246,35 +251,19 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                R.id.item_order -> {
+                    fragmentManager.beginTransaction()
+                        .hide(activeFragment)
+                        .show(generateOrder)
+                        .commit()
+
+                    activeFragment = generateOrder
+                    true
+                }
+
                 else -> false
             }
 
         }
-    }
-
-    private fun crearExcel(){
-
-        excelGestor.crearLibro();
-        excelGestor.crearHoja("Hoja1")
-        excelGestor.crearCellSytle(HSSFColor.BLACK.index, HSSFColor.GREEN.index, HSSFCellStyle.SOLID_FOREGROUND, CellStyle.ALIGN_CENTER)
-
-        var numeroFila = 0
-        excelGestor.crearFila(numeroFila)
-        numeroFila++
-
-        excelGestor.createCelda("Campo 1",0)
-        excelGestor.createCelda("Ccampo 2",1)
-
-        excelGestor.crearCellSytle(HSSFColor.BLACK.index, HSSFColor.WHITE.index, HSSFCellStyle.SOLID_FOREGROUND, CellStyle.ALIGN_CENTER)
-
-        for(num in 1..5) {
-            val dato = ExcelData("valor c"+num,num+0.5)
-            excelGestor.crearFila(numeroFila)
-            numeroFila++
-            excelGestor.createCelda(dato.campo1,0)
-            excelGestor.createCelda(dato.campo2,1)
-        }
-
-        excelGestor.guardarLibro("excelCreado3.xls",this)
     }
 }

@@ -3,15 +3,16 @@ package com.example.listadinamicaheroes.data
 
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
 
 class GestorExcel() {
     private lateinit var libro: Workbook
@@ -52,10 +53,16 @@ class GestorExcel() {
         celda.setCellStyle(cellStyle)
     }
 
-    fun guardarLibro(fileName: String?, context: Context?): Boolean {
+    fun guardarLibro(fileName: String?, context: Context?): Uri {
         var isSuccess: Boolean
         val file = File(context?.getExternalFilesDir(null), fileName)
         var fileOutputStream: FileOutputStream? = null
+
+        val fileUri: Uri = FileProvider.getUriForFile(
+            context!!,
+            "com.example.listadinamicaheroes.fileprovider", //(use your app signature + ".provider" )
+            file);
+
         try {
             fileOutputStream = FileOutputStream(file)
             libro!!.write(fileOutputStream)
@@ -66,7 +73,6 @@ class GestorExcel() {
                 "Exito al crear el excel",
                 Toast.LENGTH_LONG
             ).show()
-            isSuccess = true
         } catch (e: FileNotFoundException) {
 
             Toast.makeText(
@@ -76,10 +82,8 @@ class GestorExcel() {
             ).show()
 
             Log.e(ContentValues.TAG, "Failed to save file due to Exception: ", e)
-            isSuccess = false
         } catch (e: IOException) {
             Log.e(ContentValues.TAG, "Error writing Exception: ", e)
-            isSuccess = false
         } finally {
             try {
                 fileOutputStream?.close()
@@ -87,7 +91,8 @@ class GestorExcel() {
                 ex.printStackTrace()
             }
         }
-        return isSuccess
+
+        return fileUri
     }
 
 

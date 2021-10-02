@@ -51,8 +51,6 @@ dependencies {
 
     //implementation 'com.google.firebase:firebase-storage-ktx:20.0.0'
 
-
-
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:8.0.0'
     // FirebaseUI for Firebase Auth
