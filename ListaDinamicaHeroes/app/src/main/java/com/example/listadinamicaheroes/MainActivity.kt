@@ -13,12 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadinamicaheroes.data.Admin
+import com.example.listadinamicaheroes.data.ExcelData
+import com.example.listadinamicaheroes.data.GestorExcel
 import com.example.listadinamicaheroes.data.SaleStand
 import com.example.listadinamicaheroes.databinding.ActivityMainBinding
-import com.example.listadinamicaheroes.fragments.CreateSaleStandFragment
-import com.example.listadinamicaheroes.fragments.FragmentAddSalesUnit
-import com.example.listadinamicaheroes.fragments.UpdateSaleProduct
-import com.example.listadinamicaheroes.fragments.UpdateSaleStand
+import com.example.listadinamicaheroes.fragments.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -26,6 +25,9 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import org.apache.poi.hssf.usermodel.HSSFCellStyle
+import org.apache.poi.hssf.util.HSSFColor
+import org.apache.poi.ss.usermodel.CellStyle
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     val createSaleStandFragment = CreateSaleStandFragment()
     val customSaleProduct = UpdateSaleProduct()
     val customSaleStand = UpdateSaleStand()
+    val generateOrder = Order()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,11 +140,11 @@ class MainActivity : AppCompatActivity() {
             if (role == "Vendedor") {
                 activeFragment = customSaleProduct
 
-
                 val bundle = Bundle();
                 bundle.putString("username", username);
 
                 customSaleStand.arguments = bundle
+                generateOrder.arguments = bundle
 
                 viewBinding.bottomNav.menu.findItem(R.id.item_add).isEnabled = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_add).isVisible = false
@@ -161,6 +164,10 @@ class MainActivity : AppCompatActivity() {
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isEnabled = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isCheckable = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isVisible = false
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isVisible = false
             }
 
             alertDialog.dismiss()
@@ -200,6 +207,11 @@ class MainActivity : AppCompatActivity() {
             .hide(addFragment)
             .commit()
 
+        fragmentManager.beginTransaction()
+            .add(R.id.fragmentContainer, generateOrder)
+            .hide(generateOrder)
+            .commit()
+
         viewBinding.bottomNav.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.item_home -> {
@@ -236,6 +248,16 @@ class MainActivity : AppCompatActivity() {
                             .commit()
 
                     activeFragment = customSaleStand
+                    true
+                }
+
+                R.id.item_order -> {
+                    fragmentManager.beginTransaction()
+                        .hide(activeFragment)
+                        .show(generateOrder)
+                        .commit()
+
+                    activeFragment = generateOrder
                     true
                 }
 

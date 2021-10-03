@@ -51,8 +51,6 @@ dependencies {
 
     //implementation 'com.google.firebase:firebase-storage-ktx:20.0.0'
 
-
-
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:8.0.0'
     // FirebaseUI for Firebase Auth
@@ -65,6 +63,7 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-database-ktx:20.0.1'
+    implementation files('libs\\poi-3.7.jar')
 
 
     testImplementation 'junit:junit:4.+'
