@@ -16,14 +16,14 @@
 
     <item
         android:id="@+id/item_custom"
-        android:icon="@drawable/ic_add"
-        android:title="Customizar Producto"
+        android:icon="@drawable/ic_edit"
+        android:title="Producto"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/item_custom_sale_stand"
-        android:icon="@drawable/ic_add"
-        android:title="Customizar Puesto de Venta"
+        android:icon="@drawable/ic_edit"
+        android:title="Puesto de Venta"
         app:showAsAction="never"/>
 
     <item
