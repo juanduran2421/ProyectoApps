@@ -73,15 +73,10 @@ class Order : Fragment() {
 
         val username = arguments?.getString("username").toString()
 
-        Log.d("entre por aca", username)
         val getQuery = myRefSaleStand.child(username).child("email").get()
 
         getQuery.addOnSuccessListener {
-
-            Log.d("entre por aca 2", username)
             adminEmail =  getQuery.result?.value.toString()
-
-            Log.d("entre por aca 3", adminEmail)
         }
     }
 
