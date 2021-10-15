@@ -12,12 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.listadinamicaheroes.data.Admin
-import com.example.listadinamicaheroes.data.ExcelData
-import com.example.listadinamicaheroes.data.GestorExcel
-import com.example.listadinamicaheroes.data.SaleStand
+import com.example.listadinamicaheroes.data.*
 import com.example.listadinamicaheroes.databinding.ActivityMainBinding
 import com.example.listadinamicaheroes.fragments.*
+import com.example.listadinamicaheroes.fragments.Order
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -38,14 +36,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var activeFragment: Fragment
     private lateinit var snapshotDataBase: DataSnapshot
     private lateinit var snapshotDataBaseAdmin: DataSnapshot
+    private lateinit var snapshotDataBaseClient: DataSnapshot
 
     val database = Firebase.database
     val myRef = database.getReference("Sale")
     val myRefAdmin = database.getReference("Admin")
+    val myRefClient = database.getReference("Client")
+
     val addFragment = FragmentAddSalesUnit()
     val createSaleStandFragment = CreateSaleStandFragment()
     val customSaleProduct = UpdateSaleProduct()
     val customSaleStand = UpdateSaleStand()
+    val createProductOrder = CreateProductOrder()
     val generateOrder = Order()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +67,14 @@ class MainActivity : AppCompatActivity() {
         myRefAdmin.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshotDataBaseAdmin = snapshot
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+
+        myRefClient.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshotDataBaseClient = snapshot
             }
             override fun onCancelled(error: DatabaseError) {
             }
@@ -103,6 +113,14 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
 
+            while (role == "Cliente" && !snapshotDataBaseClient.exists()) {
+                Toast.makeText(
+                    this,
+                    "Esperando a la base de datos",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
             if (role == "Vendedor") {
                 val value = snapshotDataBase.child(userName)
 
@@ -111,8 +129,20 @@ class MainActivity : AppCompatActivity() {
 
                     removeAlertDialog(alertDialog, correctPassword, password, role, userName)
                 }
-            } else {
+            }
+
+            if (role == "Administrador") {
                 val value = snapshotDataBaseAdmin.child(userName)
+
+                if (value.getValue<Admin>() != null) {
+                    correctPassword = value.getValue<Admin>()?.password.toString()
+
+                    removeAlertDialog(alertDialog, correctPassword, password, role, userName)
+                }
+            }
+
+            if (role == "Cliente") {
+                val value = snapshotDataBaseClient.child(userName)
 
                 if (value.getValue<Admin>() != null) {
                     correctPassword = value.getValue<Admin>()?.password.toString()
@@ -150,11 +180,19 @@ class MainActivity : AppCompatActivity() {
                 viewBinding.bottomNav.menu.findItem(R.id.item_add).isVisible = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_add).isCheckable = false
 
+                /*
                 viewBinding.bottomNav.menu.findItem(R.id.item_home).isEnabled = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_home).isCheckable = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_home).isVisible = false
 
-            } else {
+                 */
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_create_order).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_create_order).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_create_order).isVisible = false
+            }
+
+            if (role == "Administrador"){
                 activeFragment = createSaleStandFragment
 
                 viewBinding.bottomNav.menu.findItem(R.id.item_custom).isEnabled = false
@@ -168,6 +206,41 @@ class MainActivity : AppCompatActivity() {
                 viewBinding.bottomNav.menu.findItem(R.id.item_order).isEnabled = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_order).isCheckable = false
                 viewBinding.bottomNav.menu.findItem(R.id.item_order).isVisible = false
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_create_order).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_create_order).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_create_order).isVisible = false
+            }
+
+            if (role == "Cliente") {
+                val bundle = Bundle();
+                bundle.putString("username", username);
+                createProductOrder.arguments = bundle
+
+                activeFragment = createProductOrder
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom).isVisible = false
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_custom_sale_stand).isVisible = false
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_order).isVisible = false
+
+                viewBinding.bottomNav.menu.findItem(R.id.item_add).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_add).isVisible = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_add).isCheckable = false
+
+                /*
+                viewBinding.bottomNav.menu.findItem(R.id.item_home).isEnabled = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_home).isCheckable = false
+                viewBinding.bottomNav.menu.findItem(R.id.item_home).isVisible = false
+
+                 */
             }
 
             alertDialog.dismiss()
@@ -212,8 +285,14 @@ class MainActivity : AppCompatActivity() {
             .hide(generateOrder)
             .commit()
 
+        fragmentManager.beginTransaction()
+            .add(R.id.fragmentContainer, createProductOrder)
+            .hide(createProductOrder)
+            .commit()
+
         viewBinding.bottomNav.setOnNavigationItemSelectedListener {
             when (it.itemId) {
+                /*
                 R.id.item_home -> {
                     fragmentManager.beginTransaction()
                         .hide(activeFragment)
@@ -222,6 +301,8 @@ class MainActivity : AppCompatActivity() {
                     activeFragment = createSaleStandFragment
                     true
                 }
+
+                 */
 
                 R.id.item_add -> {
                     fragmentManager.beginTransaction()
@@ -258,6 +339,16 @@ class MainActivity : AppCompatActivity() {
                         .commit()
 
                     activeFragment = generateOrder
+                    true
+                }
+
+                R.id.item_create_order -> {
+                    fragmentManager.beginTransaction()
+                        .hide(activeFragment)
+                        .show(createProductOrder)
+                        .commit()
+
+                    activeFragment = createProductOrder
                     true
                 }
 

@@ -2,11 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!--
     <item
         android:id="@+id/item_home"
         android:title="@string/home_title"
         android:icon="@drawable/ic_home"
         app:showAsAction="never"/>
+        -->
 
     <item
         android:id="@+id/item_add"
@@ -30,6 +32,12 @@
         android:id="@+id/item_order"
         android:icon="@drawable/ic_report"
         android:title="Generar Reporte"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/item_create_order"
+        android:icon="@drawable/ic_home"
+        android:title="Crear Orden"
         app:showAsAction="never"/>
 
 </menu>
