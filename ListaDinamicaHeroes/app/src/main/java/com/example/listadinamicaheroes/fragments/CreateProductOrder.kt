@@ -1,11 +1,14 @@
 package com.example.listadinamicaheroes.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.core.text.set
 import androidx.fragment.app.Fragment
 import com.example.listadinamicaheroes.data.Product
 import com.example.listadinamicaheroes.databinding.FragmentCreateProductOrderBinding
@@ -109,13 +112,21 @@ class CreateProductOrder : Fragment() {
     }
 
     private fun publicarOrden() {
-        var numberProducts = mBinding.etUnit2.text.toString()
-        var listProduct = mBinding.spinnerOrder.selectedItem.toString()
-        for(i in 0 until numberProducts.toInt()-1) {
-            listProduct = listProduct + "," + mBinding.spinnerOrder.selectedItem.toString()
+        if (mBinding.etUnit2.text.toString().toInt() !== 0) {
+            var numberProducts = mBinding.etUnit2.text.toString()
+            var listProduct = mBinding.spinnerOrder.selectedItem.toString()
+            for(i in 0 until numberProducts.toInt()-1) {
+                listProduct = listProduct + "," + mBinding.spinnerOrder.selectedItem.toString()
+            }
+
+            val newOrder = Order(clientId,  listProduct, mBinding.spinnerOrder2.selectedItem.toString(), address, cellphone, email)
+            myRefOrder.push().setValue(newOrder)
+
+            mBinding.etUnit2.text.clear()
+            Toast.makeText(view?.context, "Orden creada exitosamente", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(view?.context, "Falta incluir la cantidad", Toast.LENGTH_SHORT).show()
         }
 
-        val newOrder = Order(clientId,  listProduct, mBinding.spinnerOrder2.selectedItem.toString(), address, cellphone, email)
-        myRefOrder.push().setValue(newOrder)
     }
 }
