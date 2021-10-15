@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ListaDinamicaHeroes</string>
+    <string name="app_name">AgroEcológico</string>
     <string name="spFirstTime">spFirstTime</string>
     <string name="dialog_register">Login</string>
     <string name="confirm_dialog">Entrar</string>
